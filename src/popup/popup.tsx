@@ -1,7 +1,7 @@
 import React from 'react';
 import './popup.css';
 import { createRoot } from 'react-dom/client';
-import { Message } from '../background/background';
+import { Message } from '../static/sharedTypes';
 
 function sendMessageToBg(message: Message) {
   chrome.runtime.sendMessage(

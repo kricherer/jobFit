@@ -1,14 +1,6 @@
-import { Message } from '../background/background';
-
-const aboutTheJobClass = `.jobs-box__html-content`;
-
-// helpers:
-function extractTextFromElement(elementClass: string) {
-  return document
-    .querySelector(elementClass)
-    .textContent.replace('About the job', '')
-    .trim();
-}
+import { Message } from '../static/sharedTypes';
+import { aboutTheJobClass } from '../utils/constants';
+import { extractTextFromElement } from '../utils/utils';
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener(
@@ -17,7 +9,15 @@ chrome.runtime.onMessage.addListener(
 
     if (message.type === 'catch-job-description') {
       const htmlTextContent = extractTextFromElement(aboutTheJobClass);
-      sendResponse({ message: htmlTextContent, type: 'catch-job-description' });
+
+      if (htmlTextContent === '') {
+        console.error("Job post couldn't been processed");
+      } else {
+        sendResponse({
+          message: htmlTextContent,
+          type: 'catch-job-description',
+        });
+      }
     }
   }
 );
