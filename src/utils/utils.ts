@@ -1,27 +1,6 @@
 import { Message } from '../static/sharedTypes';
-import { getQuery } from './queries';
+import { StorageKey, localStorage } from './storageClasses';
 
-type GlobalStateKey = 'query';
-
-export function setState(key: GlobalStateKey, value: any) {
-  chrome.storage.sync.set({ [key]: value }, () => {
-    console.log(`Data saved - key: ${key} and value: ${value}`);
-  });
-}
-
-export function getState(
-  key: GlobalStateKey
-): Promise<GlobalStateKey | undefined> {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(key, (result) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(result[key]);
-      }
-    });
-  });
-}
 export function sendToContentScript(message: Message) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     // Send a message to the content script of the active tab
@@ -29,10 +8,8 @@ export function sendToContentScript(message: Message) {
       tabs[0].id,
       { message },
       async (response: Message) => {
-        console.log('Response from content script:', response);
         if (response.type === 'catch-job-description') {
-          const query = getQuery(response.message);
-          setState('query', query);
+          localStorage.set('jobRequirements', response.message);
         }
       }
     );
