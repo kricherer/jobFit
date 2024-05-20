@@ -1,5 +1,5 @@
 import { Message } from '../static/sharedTypes';
-import { StorageKey, localStorage } from './storageClasses';
+import {localStorage } from './storageClasses';
 
 export function sendToContentScript(message: Message) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -16,12 +16,3 @@ export function sendToContentScript(message: Message) {
   });
 }
 
-export function extractTextFromElement(elementClass: string): string {
-  if (!elementClass || elementClass === '') return '';
-
-  const element = document.querySelector(elementClass);
-  if (!element) return '';
-  let textContent = element.textContent || '';
-  textContent = textContent.replace('About the job', '').trim();
-  return textContent;
-}

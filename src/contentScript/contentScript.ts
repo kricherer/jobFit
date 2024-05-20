@@ -1,6 +1,7 @@
 import { Message } from '../static/sharedTypes';
 import { aboutTheJobClass } from '../utils/constants';
-import { extractTextFromElement } from '../utils/utils';
+import { extractTextFromElement } from '../utils/utils-content-script';
+
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener(

@@ -1,5 +1,5 @@
 import { Message } from '../static/sharedTypes';
-import { sendToContentScript } from '../utils/utils';
+import { sendToContentScript } from '../utils/utils-background-script';
 
 // ----- Listen to popup --------
 chrome.runtime.onMessage.addListener(

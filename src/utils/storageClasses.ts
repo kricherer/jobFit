@@ -9,26 +9,32 @@ interface Storage {
 }
 
 abstract class BaseStorage implements Storage {
-  get(key: StorageKey) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.getStorageArea().get(key);
-        resolve(result);
-      } catch (exception) {
-        reject(exception);
-      }
-    });
-  }
-  set(key: StorageKey, value: unknown) {
-    return new Promise<void>((resolve, reject) => {
-      const result = this.getStorageArea().set({ [key]: value }, () => {
+  async get(key: StorageKey): Promise<StorageValue> {
+    return new Promise((resolve, reject) => {
+      this.getStorageArea().get(key, (result) => {
         const err = chrome.runtime.lastError;
-        if (err) reject(err);
-        else resolve();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[key]);
+        }
       });
-      resolve(result);
     });
   }
+
+  async set(key: StorageKey, value: StorageValue): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.getStorageArea().set({ [key]: value }, () => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   remove(...keys: StorageKey[]): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       let keysRemoved = 0;
@@ -48,7 +54,7 @@ abstract class BaseStorage implements Storage {
     });
   }
 
-  abstract getStorageArea(): StorageArea;
+  protected abstract getStorageArea(): StorageArea;
 }
 
 class LocalStorage extends BaseStorage {

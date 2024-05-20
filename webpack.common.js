@@ -9,10 +9,6 @@ module.exports = {
     options: path.resolve('src/options/options.tsx'),
     background: path.resolve('src/background/background.ts'),
     contentScript: path.resolve('src/contentScript/contentScript.ts'),
-    utils: path.resolve('src/utils/utils.ts'),
-    utils: path.resolve('src/utils/storageClasses.ts'),
-    utils: path.resolve('src/utils/constants.ts'),
-    utils: path.resolve('src/static/sharedTypes.ts'),
   },
   module: {
     rules: [
