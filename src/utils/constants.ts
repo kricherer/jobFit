@@ -1,0 +1,1 @@
+export const aboutTheJobClass = `.jobs-box__html-content`;
