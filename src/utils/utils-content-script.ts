@@ -1,36 +1,22 @@
 import { Message, MessageType } from '../static/sharedTypes';
+import {
+  aboutTheJobClass,
+  optimizeCvButtonTitle,
+  optimizeCvButtonStylesClass,
+  saveButtonClass,
+} from '../utils/constants';
+import { formatClass } from './utils-common';
 
 export function extractTextFromElement(elementClass: string): string {
   if (!elementClass || elementClass === '') return '';
 
-  const element = document.querySelector(elementClass);
+  const formattedElementClass = formatClass(elementClass);
+
+  const element = document.querySelector(formattedElementClass);
   if (!element) return '';
   let textContent = element.textContent || '';
   textContent = textContent.replace('About the job', '').trim();
   return textContent;
-}
-
-function wait(sec: number) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(null);
-    }, sec * 1000);
-  });
-}
-
-export async function retryUntilNotNull(divClass: string) {
-  return new Promise(async (resolve, reject) => {
-    let divToRemove = null;
-    let count = 0;
-    while (divToRemove === null) {
-      count++;
-      if (count > 10) reject(`className: ${divClass} not found!`);
-      await wait(1.5);
-      divToRemove = document.querySelector(divClass);
-    }
-    console.log(`Waited 0.5 sec ${count} times.`);
-    resolve(divToRemove);
-  });
 }
 
 export function appendSibling(
@@ -51,5 +37,53 @@ export function sendMessageToBackground(
   chrome.runtime.sendMessage({
     message,
     type,
+  });
+}
+
+export async function createButton() {
+  const saveButtonEl = document.querySelector(
+    formatClass(saveButtonClass)
+  ) as HTMLElement | null;
+
+  // Create the new sibling button element
+  const optimizeButton = document.createElement('button');
+  optimizeButton.className = optimizeCvButtonStylesClass;
+  optimizeButton.type = 'button';
+  optimizeButton.innerHTML = optimizeCvButtonTitle;
+
+  optimizeButton.addEventListener('click', () => {
+    const extractedEl = extractTextFromElement(aboutTheJobClass);
+    sendMessageToBackground(extractedEl, 'catch-job-description');
+  });
+
+  // Append optimize cv button
+  if (saveButtonEl) {
+    appendSibling(saveButtonEl, optimizeButton);
+  }
+}
+
+let timeout: ReturnType<typeof setTimeout>;
+let buttonAdded = false;
+export function handleMutations(mutations: MutationRecord[]): void {
+  mutations.forEach((mutation) => {
+    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+      mutation.addedNodes.forEach((node) => {
+        if (
+          node.nodeType === 1 &&
+          (node as HTMLElement).classList.contains(saveButtonClass)
+        ) {
+          if (buttonAdded) {
+            buttonAdded = false;
+            return;
+          }
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            // sending the createButton to event loop queue, waiting for call stack to empty and then excecuting  once.
+            createButton();
+            buttonAdded = true;
+          }, 0);
+        }
+      });
+    }
   });
 }

@@ -1,6 +1,5 @@
 import { Message } from '../static/sharedTypes';
 import { localStorage } from '../utils/storageClasses';
-import { sendToContentScript } from '../utils/utils-background-script';
 
 // ----- Listen to popup --------
 chrome.runtime.onMessage.addListener(
@@ -14,10 +13,3 @@ chrome.runtime.onMessage.addListener(
     // sendResponse({ received: true });
   }
 );
-
-// ------ Listen for tab updates when user clicks and changes job description
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') {
-    sendToContentScript({ type: 'page-loaded' });
-  }
-});
