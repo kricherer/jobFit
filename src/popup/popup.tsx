@@ -12,16 +12,7 @@ function sendMessageToBg(message: Message) {
   );
 }
 const App: React.FC<{}> = () => {
-  function handleClick() {
-    const message: Message = { type: 'catch-job-description' };
-    sendMessageToBg(message);
-  }
-
-  return (
-    <div>
-      <button onClick={handleClick}>Catch Requirements</button>
-    </div>
-  );
+  return <div></div>;
 };
 
 const container = document.createElement('div');

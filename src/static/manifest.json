@@ -10,7 +10,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Weather Extension",
+    "default_title": "jobFit",
     "default_icon": "icon.png"
   },
   "permissions": [
