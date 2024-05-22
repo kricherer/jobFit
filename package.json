@@ -1,7 +1,7 @@
 {
-  "name": "weather-extension",
+  "name": "job-fit",
   "version": "1.0.0",
-  "description": "React Weather Extension",
+  "description": "Fit your CV to a job post requirements.",
   "scripts": {
     "start": "webpack --watch --progress --config webpack.dev.js",
     "build": "webpack --watch --progress --config webpack.prod.js"
