@@ -2,12 +2,16 @@ import { Message, MessageType } from '../static/sharedTypes';
 import {
   aboutTheJobClass,
   optimizeCvButtonTitle,
-  saveButtonClass,
   existingElSelector,
   optimizeCvBtnClassNamesLinkedin,
   optimizeCvBtnStyles,
 } from '../utils/constants';
 import { formatClass } from './utils-common';
+
+interface OptimizeButtonConfig {
+  classes: string;
+  style: string;
+}
 
 export function extractTextFromElement(elementClass: string): string {
   if (!elementClass || elementClass === '') return '';
@@ -40,11 +44,6 @@ export function sendMessageToBackground(
     message,
     type,
   });
-}
-
-interface OptimizeButtonConfig {
-  classes: string;
-  style: string;
 }
 
 export function createOptimizeButton(
