@@ -2,9 +2,10 @@ import { Message, MessageType } from '../static/sharedTypes';
 import {
   aboutTheJobClass,
   optimizeCvButtonTitle,
-  optimizeCvButtonStylesClass,
   saveButtonClass,
-  saveButtonCssSelector,
+  existingElSelector,
+  optimizeCvBtnClassNamesLinkedin,
+  optimizeCvBtnStyles,
 } from '../utils/constants';
 import { formatClass } from './utils-common';
 
@@ -41,74 +42,27 @@ export function sendMessageToBackground(
   });
 }
 
-// export async function createHtmlElement() {
-//   const saveButtonEl = document.querySelector(
-//     saveButtonCssSelector
-//   ) as HTMLElement | null;
-
-//   // Create the new sibling button element
-//   const optimizeButton = document.createElement('button');
-//   optimizeButton.className = optimizeCvButtonStylesClass;
-//   optimizeButton.type = 'button';
-//   optimizeButton.innerHTML = optimizeCvButtonTitle;
-
-//   optimizeButton.addEventListener('click', () => {
-//     const extractedEl = extractTextFromElement(aboutTheJobClass);
-//     sendMessageToBackground(extractedEl, 'catch-job-description');
-//   });
-
-//   // Append optimize cv button
-//   if (saveButtonEl) {
-//     appendSibling(saveButtonEl, optimizeButton);
-//   }
-// }
-
-// Yair----------------------------
-/**
 interface OptimizeButtonConfig {
-  classes: string[];
+  classes: string;
   style: string;
 }
 
-export async function createOptimizeButton(buttonConfig: Partial<OptimizeButtonConfig>) {
-  const anchorEl = document.querySelector(anchorElSelector) as HTMLElement | null;
-
-  // Create the new sibling button element
-  const optimizeButton = document.createElement('button');
-
-  if (buttonConfig.classes) optimizeButton.className = optimizeCvButtonStylesClass;
-  if (buttonConfig.style) optimizeButton.setAttribute('style', buttonConfig.style);
-
-  optimizeButton.type = 'button';
-  optimizeButton.innerHTML = optimizeCvButtonTitle;
-}
- */
-//----------------------------
-// My----------------------------
-interface OptimizeButtonConfig {
-  classes: string[];
-  style: string;
-}
-
-export async function createOptimizeButton(
+export function createOptimizeButton(
   buttonConfig: Partial<OptimizeButtonConfig>
 ) {
-  const saveButtonEl = document.querySelector(
-    saveButtonCssSelector
-  ) as HTMLElement | null;
-
   // Create the new sibling button element
   const optimizeButton = document.createElement('button');
 
-  if (buttonConfig.classes)
-    optimizeButton.className = optimizeCvButtonStylesClass;
+  if (buttonConfig.classes) {
+    optimizeButton.className = buttonConfig.classes;
+  }
   if (buttonConfig.style)
     optimizeButton.setAttribute('style', buttonConfig.style);
 
   optimizeButton.type = 'button';
   optimizeButton.innerHTML = optimizeCvButtonTitle;
+  return optimizeButton;
 }
-//----------------------------
 
 export function addClickListener(
   buttonElement: HTMLElement,
@@ -116,12 +70,6 @@ export function addClickListener(
 ) {
   buttonElement.addEventListener('click', callBack);
 }
-/*
-() => {
-    const extractedEl = extractTextFromElement(aboutTheJobClass);
-    sendMessageToBackground(extractedEl, 'catch-job-description');
-  }
-*/
 
 let timeout: ReturnType<typeof setTimeout>;
 let buttonAdded = false;
@@ -131,7 +79,7 @@ export function handleMutations(mutations: MutationRecord[]): void {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === 1 &&
-          (node as HTMLElement).matches(saveButtonCssSelector)
+          (node as HTMLElement).matches(existingElSelector)
         ) {
           if (buttonAdded) {
             buttonAdded = false;
@@ -139,8 +87,25 @@ export function handleMutations(mutations: MutationRecord[]): void {
           }
           clearTimeout(timeout);
           timeout = setTimeout(() => {
-            // sending the createHtmlElement to event loop queue, waiting for call stack to empty and then excecuting  once.
-            createHtmlElement();
+            // sending this functionality to event loop queue, waiting for call stack to empty and then excecuting  once.
+
+            const optimizeButton = createOptimizeButton({
+              style: optimizeCvBtnStyles,
+              classes: optimizeCvBtnClassNamesLinkedin,
+            });
+
+            const existingEl = document.querySelector(
+              existingElSelector
+            ) as HTMLElement | null; // The existing element to which we append a sibling.
+
+            if (existingEl && optimizeButton) {
+              appendSibling(existingEl, optimizeButton);
+              addClickListener(optimizeButton, () => {
+                const extractedEl = extractTextFromElement(aboutTheJobClass);
+                sendMessageToBackground(extractedEl, 'catch-job-description');
+              });
+            }
+
             buttonAdded = true;
           }, 0);
         }
