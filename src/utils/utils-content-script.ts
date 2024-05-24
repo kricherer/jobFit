@@ -4,6 +4,7 @@ import {
   optimizeCvButtonTitle,
   optimizeCvButtonStylesClass,
   saveButtonClass,
+  saveButtonCssSelector,
 } from '../utils/constants';
 import { formatClass } from './utils-common';
 
@@ -40,27 +41,87 @@ export function sendMessageToBackground(
   });
 }
 
-export async function createButton() {
+// export async function createHtmlElement() {
+//   const saveButtonEl = document.querySelector(
+//     saveButtonCssSelector
+//   ) as HTMLElement | null;
+
+//   // Create the new sibling button element
+//   const optimizeButton = document.createElement('button');
+//   optimizeButton.className = optimizeCvButtonStylesClass;
+//   optimizeButton.type = 'button';
+//   optimizeButton.innerHTML = optimizeCvButtonTitle;
+
+//   optimizeButton.addEventListener('click', () => {
+//     const extractedEl = extractTextFromElement(aboutTheJobClass);
+//     sendMessageToBackground(extractedEl, 'catch-job-description');
+//   });
+
+//   // Append optimize cv button
+//   if (saveButtonEl) {
+//     appendSibling(saveButtonEl, optimizeButton);
+//   }
+// }
+
+// Yair----------------------------
+/**
+interface OptimizeButtonConfig {
+  classes: string[];
+  style: string;
+}
+
+export async function createOptimizeButton(buttonConfig: Partial<OptimizeButtonConfig>) {
+  const anchorEl = document.querySelector(anchorElSelector) as HTMLElement | null;
+
+  // Create the new sibling button element
+  const optimizeButton = document.createElement('button');
+
+  if (buttonConfig.classes) optimizeButton.className = optimizeCvButtonStylesClass;
+  if (buttonConfig.style) optimizeButton.setAttribute('style', buttonConfig.style);
+
+  optimizeButton.type = 'button';
+  optimizeButton.innerHTML = optimizeCvButtonTitle;
+}
+ */
+//----------------------------
+// My----------------------------
+interface OptimizeButtonConfig {
+  classes: string[];
+  style: string;
+}
+
+export async function createOptimizeButton(
+  buttonConfig: Partial<OptimizeButtonConfig>
+) {
   const saveButtonEl = document.querySelector(
-    formatClass(saveButtonClass)
+    saveButtonCssSelector
   ) as HTMLElement | null;
 
   // Create the new sibling button element
   const optimizeButton = document.createElement('button');
-  optimizeButton.className = optimizeCvButtonStylesClass;
+
+  if (buttonConfig.classes)
+    optimizeButton.className = optimizeCvButtonStylesClass;
+  if (buttonConfig.style)
+    optimizeButton.setAttribute('style', buttonConfig.style);
+
   optimizeButton.type = 'button';
   optimizeButton.innerHTML = optimizeCvButtonTitle;
+}
+//----------------------------
 
-  optimizeButton.addEventListener('click', () => {
+export function addClickListener(
+  buttonElement: HTMLElement,
+  callBack: () => unknown
+) {
+  buttonElement.addEventListener('click', callBack);
+}
+/*
+() => {
     const extractedEl = extractTextFromElement(aboutTheJobClass);
     sendMessageToBackground(extractedEl, 'catch-job-description');
-  });
-
-  // Append optimize cv button
-  if (saveButtonEl) {
-    appendSibling(saveButtonEl, optimizeButton);
   }
-}
+*/
 
 let timeout: ReturnType<typeof setTimeout>;
 let buttonAdded = false;
@@ -70,7 +131,7 @@ export function handleMutations(mutations: MutationRecord[]): void {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === 1 &&
-          (node as HTMLElement).classList.contains(saveButtonClass)
+          (node as HTMLElement).matches(saveButtonCssSelector)
         ) {
           if (buttonAdded) {
             buttonAdded = false;
@@ -78,8 +139,8 @@ export function handleMutations(mutations: MutationRecord[]): void {
           }
           clearTimeout(timeout);
           timeout = setTimeout(() => {
-            // sending the createButton to event loop queue, waiting for call stack to empty and then excecuting  once.
-            createButton();
+            // sending the createHtmlElement to event loop queue, waiting for call stack to empty and then excecuting  once.
+            createHtmlElement();
             buttonAdded = true;
           }, 0);
         }
