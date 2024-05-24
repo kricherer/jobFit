@@ -64,11 +64,9 @@ export function createOptimizeButton(
   return optimizeButton;
 }
 
-export function addClickListener(
-  buttonElement: HTMLElement,
-  callBack: () => unknown
-) {
-  buttonElement.addEventListener('click', callBack);
+function onOptimizeClicked() {
+  const extractedEl = extractTextFromElement(aboutTheJobClass);
+  sendMessageToBackground(extractedEl, 'catch-job-description');
 }
 
 let timeout: ReturnType<typeof setTimeout>;
@@ -100,10 +98,7 @@ export function handleMutations(mutations: MutationRecord[]): void {
 
             if (existingEl && optimizeButton) {
               appendSibling(existingEl, optimizeButton);
-              addClickListener(optimizeButton, () => {
-                const extractedEl = extractTextFromElement(aboutTheJobClass);
-                sendMessageToBackground(extractedEl, 'catch-job-description');
-              });
+              optimizeButton.addEventListener('click', onOptimizeClicked);
             }
 
             buttonAdded = true;
